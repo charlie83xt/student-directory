@@ -5,7 +5,7 @@ def input_students
   puts "please enter the names of the students"
   puts "To finish, just hit return twice"
   # Create empty array
-  name = gets.chomp
+  name = STDIN.gets.chomp
   # While the name is not empty repeat this code
   while !name.empty? do
     # add the name to the array
@@ -40,6 +40,7 @@ def print_menu
   puts "2. Show the students"
   puts "3. Save the list to students.csv"
   puts "4. Load the list from students.csv"
+  puts "5. Take arguments from the command line"
   puts "9. Exit"
 end
 
@@ -59,6 +60,8 @@ def process(selection)
       save_students
     when "4"
       load_students
+    when "5"
+      try_load_students
     when "9"
       exit #this will cause the program to terminate
     else
@@ -69,7 +72,7 @@ end
 def interactive_menu
   loop do
     print_menu
-    process(gets.chomp)
+    process(STDIN.gets.chomp)
   end
 end
 
@@ -85,13 +88,25 @@ def save_students
   file.close 
 end
 
-def load_students
-  file = File.open("students.csv", "r")
+def load_students(filename = "students.csv")
+  file = File.open(filename, "r")
   file.readlines.each do |line|
     name, cohort = line.chomp.split(",")
     @students << {name: name, cohort: cohort.to_sym}
   end
   file.close
+end
+
+ def try_load_students
+  filename = ARGV.first
+  return if filename.nil?
+  if file.exists?(filename)
+    load_students(filename)
+    puts "Loaded #{@students.count} from #{filename}"
+  else
+    puts "Sorry, #{filename} doesn't exist."
+    exit
+  end
 end
     
 interactive_menu()
